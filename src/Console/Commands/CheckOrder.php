@@ -43,7 +43,7 @@ class CheckOrder extends Command
     public function handle()
     {
 
-        $this->info('Check order address use Google Place Api');
+       // $this->info('Check order address use Google Place Api');
 
         $order_id = $this->option('order_id');
         $this->info('Order ID: ' . $order_id);
@@ -55,7 +55,7 @@ class CheckOrder extends Command
         //var_dump($address);exit;
         $this->info('Address: ' . $address);
 
-        var_dump($order->shipping_address->toArray());
+        //var_dump($order->shipping_address->toArray());
 
 
         $client = new Client([
@@ -74,10 +74,22 @@ class CheckOrder extends Command
             ],
             'headers' => [
                 'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                // add your headers here
+                'Brand' => 'NexaMerchant',
             ]
         ]);
 
-        var_dump($response->getBody()->getContents());
+        $resp = $response->getBody()->getContents();
+
+        $resp = json_decode($resp, true);
+
+        if($resp['status']!='ok'){
+            $this->error('Error: ' . $resp['status']);
+            return;
+        }
+
+        var_dump($resp);
 
 
     }
