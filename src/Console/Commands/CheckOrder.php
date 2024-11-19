@@ -42,9 +42,12 @@ class CheckOrder extends Command
      */
     public function handle()
     {
+        if (! config('GooglePlaces.google_place_api_key')) {
+            $this->error('Google Place Api Key is not configured');
+            return;
+        }
 
        // $this->info('Check order address use Google Place Api');
-
         $order_id = $this->option('order_id');
         $this->info('Order ID: ' . $order_id);
 
