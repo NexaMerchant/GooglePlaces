@@ -85,4 +85,11 @@ return [
         'email' => 'email@example.com',
         'issues' => 'https://github.com/xxl4'
     ],
+
+    /**
+     * 
+     * Google Place Api Key
+     * 
+     */
+    'google_place_api_key' => env('GOOGLE_PLACE_API_KEY', ''),
 ];

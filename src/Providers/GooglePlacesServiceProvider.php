@@ -102,6 +102,7 @@ class GooglePlacesServiceProvider extends ServiceProvider
             $this->commands([
                 \NexaMerchant\GooglePlaces\Console\Commands\Install::class,
                 \NexaMerchant\GooglePlaces\Console\Commands\UnInstall::class,
+                \NexaMerchant\GooglePlaces\Console\Commands\CheckOrder::class,
             ]);
         }
     }
