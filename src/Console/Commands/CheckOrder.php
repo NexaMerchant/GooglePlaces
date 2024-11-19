@@ -84,7 +84,8 @@ class CheckOrder extends Command
 
         $resp = json_decode($resp, true);
 
-        if($resp['status']!='ok'){
+        // when it is not OK
+        if($resp['status']!='OK'){
             $this->error('Error: ' . $resp['status']);
             return;
         }
