@@ -50,15 +50,17 @@ class CheckOrder extends Command
 
         $order = $this->orderRepository->find($order_id);
 
-        $address = $order->shipping_address->address1;
+        $address = $order->shipping_address->address1.', '.$order->shipping_address->country;
 
         //var_dump($address);exit;
         $this->info('Address: ' . $address);
 
+        var_dump($order->shipping_address->toArray());
+
 
         $client = new Client([
             'base_uri' => 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json',
-            'debug' => true,
+            'debug' => false,
         ]);
 
         $response = $client->request('GET', '', [
