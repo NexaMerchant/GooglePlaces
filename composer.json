@@ -36,5 +36,5 @@
         }
     },
     "homepage": "https://nexamerchant.github.io/docs/",
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
