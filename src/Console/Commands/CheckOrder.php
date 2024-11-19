@@ -20,7 +20,7 @@ class CheckOrder extends Command
      *
      * @var string
      */
-    protected $description = 'Check order address use Google Place Api';
+    protected $description = 'Check order address use Google Place Api GooglePlaces:check-order {--order_id=}';
 
     /**
      * Create a new command instance.
@@ -52,11 +52,29 @@ class CheckOrder extends Command
         $this->info('Order ID: ' . $order_id);
 
         $order = $this->orderRepository->find($order_id);
+        if(!$order){
+            $this->error('Order not found');
+            return;
+        }
 
         $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
         //var_dump($address);exit;
         $this->info('Address: ' . $address);
+
+        //if the order is cod 
+        if($order->payment->method == 'codpayment'){
+            $this->info('Order is COD');
+            
+            // check the order status
+
+            // check the order amount
+
+            // check the order create ip, country
+
+            // check the order shipping address
+
+        }
 
         //var_dump($order->shipping_address->toArray());
 
