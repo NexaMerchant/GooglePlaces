@@ -66,7 +66,7 @@ class CheckOrder extends Command
                // 'input' => '1600 Amphitheatre Parkway, Mountain View, CA',
                 'input' => $address,
                 'inputtype' => 'textquery',
-                'fields' => 'formatted_address,name,geometry,plus_code,opening_hours,permanently_closed,photos,place_id,types',
+                'fields' => 'formatted_address,name,geometry,plus_code',
                 'key' => config('GooglePlaces.google_place_api_key'),
                 'region' => $order->shipping_address->country
             ],
