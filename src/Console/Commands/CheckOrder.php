@@ -50,7 +50,7 @@ class CheckOrder extends Command
 
         $order = $this->orderRepository->find($order_id);
 
-        $address = $order->shipping_address->address1.', '.$order->shipping_address->country;
+        $address = $order->shipping_address->address1.', '.$order->shipping_address->city;
 
         //var_dump($address);exit;
         $this->info('Address: ' . $address);
