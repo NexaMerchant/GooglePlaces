@@ -2,7 +2,8 @@
     "name": "nexa-merchant/googleplaces",
     "license": "MIT",
     "type": "library",
-    "description" : "GooglePlaces Apps",
+    "description" : "GooglePlaces Apps for NexaMerchant",
+    "keywords": ["googleplaces", "nexamerchant", "laravel", "Order", "NexaMerchant"],
     "authors": [
         {
             "name": "Steve",
