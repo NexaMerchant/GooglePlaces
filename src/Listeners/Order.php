@@ -4,6 +4,7 @@ namespace NexaMerchant\GooglePlaces\Listeners;
 
 use Illuminate\Support\Facades\Log;
 use Nicelizhi\Manage\Listeners\Base;
+use Illuminate\Support\Facades\Artisan;
 
 class Order extends Base
 {
