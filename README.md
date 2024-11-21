@@ -7,16 +7,22 @@
 
 > This Package is used to get the google places data using google places api.
 
+
 # How to Install
-
-
-```
-NexaMerchant\GooglePlaces\Providers\GooglePlacesServiceProvider::class,
-```
-Add it to config/app.php $providers
-
-# How to Publish
 
 ```
 composer require nexa-merchant/googleplaces
 ```
+
+# How to Uninstall
+
+```
+composer remove nexa-merchant/googleplaces
+```
+
+# How to Upgrade
+
+```
+composer update nexa-merchant/googleplaces
+```
+
