@@ -20,7 +20,9 @@ class Order extends Base
         // use default queue
         //Artisan::queue((new Post())->getName(), ['--order_id'=> $order->id]);
 
-        Artisan::call('GooglePlaces:check-order', ['--order_id'=> $order->id]);
+        //Artisan::call('GooglePlaces:check-order', ['--order_id'=> $order->id]);
+
+        Artisan::queue("GooglePlaces:check-order", ['--order_id'=> $order->id])->onQueue('check-order');
 
         Log::info('Order created for check place : ' . $order->id);
     }
