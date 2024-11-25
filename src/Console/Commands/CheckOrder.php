@@ -52,13 +52,6 @@ class CheckOrder extends Command
         $order_id = $this->option('order_id');
         $this->info('Order ID: ' . $order_id);
 
-        //if the order in redis and return redis data
-        $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
-        if($redis_data){
-            var_dump(json_decode($redis_data, true));
-            return;
-        }
-
         $order = $this->orderRepository->find($order_id);
         if(!$order){
             $this->error('Order not found');
@@ -69,6 +62,13 @@ class CheckOrder extends Command
 
         //var_dump($address);exit;
         $this->info('Address: ' . $address);
+
+        //if the order in redis and return redis data
+        $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
+        if($redis_data){
+            var_dump(json_decode($redis_data, true));
+            return;
+        }
 
         $order_create_country = null;
         $order_create_ip = null;
