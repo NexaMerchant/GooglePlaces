@@ -82,14 +82,12 @@ class CheckOrder extends Command
             // use the ip look up to get the more detail of the ip
             if($order_create_ip){
                 $client = new Client([
-                    'base_uri' => 'https://ipapi.co/',
+                    'base_uri' => 'http://ip-api.com/php/',
                     'debug' => false,
                 ]);
 
-                $response = $client->request('GET', $order_create_ip.'/json', [
+                $response = $client->request('GET', $order_create_ip, [
                     'headers' => [
-                        'Content-Type' => 'application/json',
-                        'Accept' => 'application/json',
                         // add your headers here
                         'Brand' => 'NexaMerchant',
                     ]
