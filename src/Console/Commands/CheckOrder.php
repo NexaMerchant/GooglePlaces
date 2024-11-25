@@ -61,7 +61,7 @@ class CheckOrder extends Command
         $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
         //var_dump($address);exit;
-        $this->info('Address: ' . $address);
+        $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
 
         //if the order in redis and return redis data
         $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
