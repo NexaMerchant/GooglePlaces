@@ -251,8 +251,10 @@ class CheckOrder extends Command
 
             $response = $client->request('GET', '', [
                 'query' => [
-                    'place_id' => $resp['candidates'][0]['place_id'],
+                    //'place_id' => $resp['candidates'][0]['place_id'],
+                    'latlng' => $resp['candidates'][0]['geometry']['location']['lat'].','.$resp['candidates'][0]['geometry']['location']['lng'],
                     'key' => config('GooglePlaces.google_place_api_key'),
+                    'fields' => 'address_component,formatted_address,geometry,plus_code',
                 ],
                 'headers' => [
                     'Content-Type' => 'application/json',
