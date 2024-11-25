@@ -78,6 +78,30 @@ class CheckOrder extends Command
                     $order_create_ip = $order_cod->ip_address;
                 }
             }
+
+            // use the ip look up to get the more detail of the ip
+            if($order_create_ip){
+                $client = new Client([
+                    'base_uri' => 'https://ipapi.co/',
+                    'debug' => false,
+                ]);
+
+                $response = $client->request('GET', $order_create_ip.'/json', [
+                    'headers' => [
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                        // add your headers here
+                        'Brand' => 'NexaMerchant',
+                    ]
+                ]);
+
+                $resp = $response->getBody()->getContents();
+
+                $resp = json_decode($resp, true);
+
+                $this->info('IP Lookup: ' . $order_create_ip);
+                var_dump($resp);
+            }
         }
 
         $this->info('Order Create Country: ' . $order_create_country);
