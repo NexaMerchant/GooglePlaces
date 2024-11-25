@@ -82,25 +82,34 @@ class CheckOrder extends Command
 
             // use the ip look up to get the more detail of the ip
             if($order_create_ip){
-                $client = new Client([
-                    'base_uri' => 'http://ip-api.com/php/',
-                    'debug' => false,
-                ]);
 
-                $response = $client->request('GET', $order_create_ip, [
-                    'headers' => [
-                        // add your headers here
-                        'Brand' => 'NexaMerchant',
-                    ]
-                ]);
+                // use the ip look up from redis
+                $ip_details = Redis::get('GooglePlaces:ip:'.$order_create_ip);
+                if($ip_details){
+                    $ip_details = json_decode($ip_details, true);
+                }else{
+                    $client = new Client([
+                        'base_uri' => 'http://ip-api.com/php/',
+                        'debug' => false,
+                    ]);
 
-                $resp = $response->getBody()->getContents();
+                    $response = $client->request('GET', $order_create_ip, [
+                        'headers' => [
+                            // add your headers here
+                            'Brand' => 'NexaMerchant',
+                        ]
+                    ]);
 
-                //var_dump($resp);
+                    $resp = $response->getBody()->getContents();
 
-                $resp = unserialize($resp);
+                    //var_dump($resp);
 
-                $ip_details = $resp;
+                    $resp = unserialize($resp);
+
+                    $ip_details = $resp;
+
+                    Redis::set('GooglePlaces:ip:'.$order_create_ip, json_encode($resp));
+                }
             }
         }
 
