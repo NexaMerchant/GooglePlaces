@@ -65,6 +65,7 @@ class CheckOrder extends Command
 
         $order_create_country = null;
         $order_create_ip = null;
+        $ip_details = null;
 
         //if the order is cod 
         if($order->payment->method == 'codpayment'){
@@ -95,17 +96,18 @@ class CheckOrder extends Command
 
                 $resp = $response->getBody()->getContents();
 
-                var_dump($resp);
+                //var_dump($resp);
 
                 $resp = unserialize($resp);
 
-                $this->info('IP Lookup: ' . $order_create_ip);
-                var_dump($resp);
+                $ip_details = $resp;
             }
         }
 
         $this->info('Order Create Country: ' . $order_create_country);
         $this->info('Order Create IP: ' . $order_create_ip);
+
+        var_dump($ip_details);
 
         //if the order in redis and return redis data
         $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
