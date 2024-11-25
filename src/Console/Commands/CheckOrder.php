@@ -139,6 +139,23 @@ class CheckOrder extends Command
         $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
         if($redis_data){
             var_dump(json_decode($redis_data, true));
+
+            $redis_data = json_decode($redis_data, true);
+
+            if($redis_data['status']!='OK'){
+                
+                if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
+
+                    $text = 'Order ID '.$order_id.' \r\n Address '.$address.' \r\n Google Place Api Error: ' . json_encode($resp);
+    
+                    $this->send($text);
+                    
+                }
+
+
+            }
+            
+
             return;
         }
 
