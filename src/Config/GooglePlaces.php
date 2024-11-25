@@ -92,4 +92,11 @@ return [
      * 
      */
     'google_place_api_key' => env('GOOGLE_PLACE_API_KEY', ''),
+
+    /**
+     * 
+     * Feishu Webhook
+     * 
+     */
+    'feishu_webhook' => env('GOOGLEPLACE_FEISHU_WEBHOOK', ''),
 ];

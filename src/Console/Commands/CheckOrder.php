@@ -82,7 +82,6 @@ class CheckOrder extends Command
 
             // use the ip look up to get the more detail of the ip
             if($order_create_ip){
-
                 // use the ip look up from redis
                 $ip_details = Redis::get('GooglePlaces:ip:'.$order_create_ip);
                 if($ip_details){
@@ -106,19 +105,35 @@ class CheckOrder extends Command
 
                     $resp = json_decode($resp, true);
                     if($resp['status']=='success'){
-                        
+
                         $ip_details = $resp;
                         Redis::set('GooglePlaces:ip:'.$order_create_ip, json_encode($resp));
+
+                        // check the ip countryCode
+                        if($ip_details){
+                            
+                            $this->info('IP Details: ' . json_encode($ip_details));
+                            $this->info('IP Country Code: ' . $ip_details['countryCode']);
+
+                            // if the ip country code is not the same as the order create country code
+                            if($ip_details['countryCode'] != $order->shipping_address->country){
+                                
+                                $this->send('Order ID '.$order_id.' \r\n Address '.$address.' \r\n IP Country Code: ' . $ip_details['countryCode'] . ' is not the same as the order create country code: ' . $order->shipping_address->country);
+
+                                return;
+                            }
+
+                        }
                     }
                     
                 }
             }
         }
 
+
         $this->info('Order Create Country: ' . $order_create_country);
         $this->info('Order Create IP: ' . $order_create_ip);
-
-        var_dump($ip_details);
+        //var_dump($ip_details);
 
         //if the order in redis and return redis data
         $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
@@ -157,11 +172,45 @@ class CheckOrder extends Command
         // when it is not OK
         if($resp['status']!='OK'){
             $this->error('Error: ' . $resp['status']);
+
+            // send the error to feishu
+
+            if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
+
+                $text = 'Order ID '.$order_id.' \r\n Address '.$address.' \r\n Google Place Api Error: ' . json_encode($resp);
+
+                $this->send($text);
+                
+            }
+
             return;
         }
+
 
         Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
 
         var_dump($resp);
+    }
+
+    private function send($text) {
+        $client = new Client([
+            'base_uri' => 'https://open.feishu.cn/open-apis/bot/v2/hook/',
+            'debug' => false,
+        ]);
+
+        $response = $client->request('POST', config('GooglePlaces.feishu_webhook'), [
+            'json' => [
+                'msg_type' => 'text',
+                'content' => [
+                    'text' => $text,
+                ]
+            ],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                // add your headers here
+                'Brand' => 'NexaMerchant',
+            ]
+        ]);
     }
 }
