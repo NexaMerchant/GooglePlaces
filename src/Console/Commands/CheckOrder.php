@@ -5,6 +5,7 @@ namespace NexaMerchant\GooglePlaces\Console\Commands;
 use Illuminate\Console\Command;
 use GuzzleHttp\Client;
 use Webkul\Sales\Repositories\OrderRepository;
+use Illuminate\Support\Facades\Redis;
 
 class CheckOrder extends Command
 {
@@ -50,6 +51,13 @@ class CheckOrder extends Command
        // $this->info('Check order address use Google Place Api');
         $order_id = $this->option('order_id');
         $this->info('Order ID: ' . $order_id);
+
+        //if the order in redis and return redis data
+        $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
+        if($redis_data){
+            $this->info('Redis Data: ' . $redis_data);
+            return;
+        }
 
         $order = $this->orderRepository->find($order_id);
         if(!$order){
@@ -113,8 +121,8 @@ class CheckOrder extends Command
             return;
         }
 
-        var_dump($resp);
+        $this->info('Google Places: ' . json_encode($resp));
 
-
+        Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
     }
 }
