@@ -97,7 +97,7 @@ class CheckOrder extends Command
 
                 var_dump($resp);
 
-                $resp = json_decode($resp, true);
+                $resp = unserialize($resp);
 
                 $this->info('IP Lookup: ' . $order_create_ip);
                 var_dump($resp);
