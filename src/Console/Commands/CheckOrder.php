@@ -172,6 +172,8 @@ class CheckOrder extends Command
 
             $address = $order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
+            $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
+
             $resp = $this->searchGoogleMap($address, $order);
 
             // when it is not OK
@@ -233,7 +235,7 @@ class CheckOrder extends Command
                // 'input' => '1600 Amphitheatre Parkway, Mountain View, CA',
                 'input' => $address,
                 'inputtype' => 'textquery',
-                'fields' => 'formatted_address,name,geometry,plus_code,place_id,icon',
+                'fields' => 'formatted_address,name,geometry,plus_code,pluscode,place_id,icon',
                 'key' => config('GooglePlaces.google_place_api_key'),
                 'region' => $order->shipping_address->country
             ],
@@ -248,6 +250,33 @@ class CheckOrder extends Command
         $resp = $response->getBody()->getContents();
 
         $resp = json_decode($resp, true);
+
+        if($resp['status']=='OK'){
+            $client = new Client([
+                'base_uri' => 'https://maps.googleapis.com/maps/api/geocode/json',
+                'debug' => false,
+            ]);
+
+            $response = $client->request('GET', '', [
+                'query' => [
+                    'place_id' => $resp['candidates'][0]['place_id'],
+                    'key' => config('GooglePlaces.google_place_api_key'),
+                ],
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    // add your headers here
+                    'Brand' => 'NexaMerchant',
+                ]
+            ]);
+
+            $rp = $response->getBody()->getContents();
+
+            $rp = json_decode($rp, true);
+
+            var_dump($rp);
+        }
+
         return $resp;
     }
 }
