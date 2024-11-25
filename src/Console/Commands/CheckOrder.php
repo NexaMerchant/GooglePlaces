@@ -71,10 +71,12 @@ class CheckOrder extends Command
             $this->info('Order is COD');
             
             // check the order create country
-            if(config("GooglePlaces.enable")) {
-                $order_code = \NexaMerchant\CheckoutCod\Models\OrderCods::where('order_id', $order->id)->first();
-                $order_create_country = $order_code->country;
-                $order_create_ip = $order_code->ip;
+            if(config("GooglePlaces.enable")=="true") {
+                $order_cod = \NexaMerchant\CheckoutCod\Models\OrderCods::where('order_id', $order->id)->first();
+                if($order_cod) {
+                    $order_create_country = $order_cod->ip_country;
+                    $order_create_ip = $order_cod->ip_address;
+                }
             }
         }
 
