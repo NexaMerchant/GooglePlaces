@@ -161,7 +161,7 @@ class CheckOrder extends Command
             return;
         }
 
-        $resp = $this->searchGoogleMap($address);
+        $resp = $this->searchGoogleMap($address, $order);
 
         // when it is not OK
         if($resp['status']!='OK'){
@@ -172,7 +172,7 @@ class CheckOrder extends Command
 
             $address = $order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
-            $resp = $this->searchGoogleMap($address);
+            $resp = $this->searchGoogleMap($address, $order);
 
             // when it is not OK
             if($resp['status']!='OK'){
@@ -222,7 +222,7 @@ class CheckOrder extends Command
     }
 
     // 
-    private function searchGoogleMap($address) {
+    private function searchGoogleMap($address, $order) {
         $client = new Client([
             'base_uri' => 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json',
             'debug' => false,
