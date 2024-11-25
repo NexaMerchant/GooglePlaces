@@ -55,7 +55,7 @@ class CheckOrder extends Command
         //if the order in redis and return redis data
         $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
         if($redis_data){
-            $this->info('Redis Data: ' . $redis_data);
+            var_dump(json_decode($redis_data, true));
             return;
         }
 
@@ -121,8 +121,8 @@ class CheckOrder extends Command
             return;
         }
 
-        $this->info('Google Places: ' . json_encode($resp));
-
         Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
+
+        var_dump($resp);
     }
 }
