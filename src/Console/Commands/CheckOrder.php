@@ -117,8 +117,10 @@ class CheckOrder extends Command
 
                             // if the ip country code is not the same as the order create country code
                             if($ip_details['countryCode'] != $order->shipping_address->country){
+
+                                $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n IP Country Code: " . $ip_details['countryCode'] . ' is not the same as the order create country code: ' . $order->shipping_address->country;
                                 
-                                $this->send('Order ID '.$order_id.' \r\n Address '.$address.' \r\n IP Country Code: ' . $ip_details['countryCode'] . ' is not the same as the order create country code: ' . $order->shipping_address->country);
+                                $this->send($text);
 
                                 return;
                             }
@@ -146,7 +148,7 @@ class CheckOrder extends Command
                 
                 if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
 
-                    $text = 'Order ID '.$order_id.' \r\n Address '.$address.' \r\n Google Place Api Error: ' . json_encode($resp);
+                    $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n Google Place Api Error: " . json_encode($resp);
     
                     $this->send($text);
                     
@@ -194,7 +196,7 @@ class CheckOrder extends Command
 
             if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
 
-                $text = 'Order ID '.$order_id.' \r\n Address '.$address.' \r\n Google Place Api Error: ' . json_encode($resp);
+                $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n Google Place Api Error: " . json_encode($resp);
 
                 $this->send($text);
                 
