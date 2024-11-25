@@ -244,6 +244,9 @@ class CheckOrder extends Command
         $resp = json_decode($resp, true);
 
         if($resp['status']=='OK'){
+
+            $this->info('Search Zip CODE ID: ' . $resp['candidates'][0]['geometry']['location']['lat'].','.$resp['candidates'][0]['geometry']['location']['lng']);
+
             $client = new Client([
                 'base_uri' => 'https://maps.googleapis.com/maps/api/geocode/json',
                 'debug' => false,
