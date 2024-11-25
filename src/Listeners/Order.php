@@ -19,8 +19,11 @@ class Order extends Base
         if(!config('GooglePlaces.enable')) {
             return;
         }
-        Artisan::queue("GooglePlaces:check-order", ['--order_id'=> $order->id])->onQueue('check-order');
 
-        Log::info('Order created for check place : ' . $order->id);
+        if(config('Apps.queue.items.check-order') && $order->status == "processing") {
+            
+            Artisan::queue("GooglePlaces:check-order", ['--order_id'=> $order->id])->onQueue(config("Apps.queue.items.check-order"));
+            Log::info('Order created for check place : ' . $order->id);
+        }
     }
 }
