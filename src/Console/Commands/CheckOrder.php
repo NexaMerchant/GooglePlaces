@@ -63,13 +63,6 @@ class CheckOrder extends Command
         //var_dump($address);exit;
         $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
 
-        //if the order in redis and return redis data
-        $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
-        if($redis_data){
-            var_dump(json_decode($redis_data, true));
-            return;
-        }
-
         $order_create_country = null;
         $order_create_ip = null;
 
@@ -87,6 +80,13 @@ class CheckOrder extends Command
 
         $this->info('Order Create Country: ' . $order_create_country);
         $this->info('Order Create IP: ' . $order_create_ip);
+
+        //if the order in redis and return redis data
+        $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
+        if($redis_data){
+            var_dump(json_decode($redis_data, true));
+            return;
+        }
 
 
         $client = new Client([
