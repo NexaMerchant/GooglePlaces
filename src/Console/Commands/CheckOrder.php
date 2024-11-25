@@ -62,21 +62,23 @@ class CheckOrder extends Command
         //var_dump($address);exit;
         $this->info('Address: ' . $address);
 
+        $order_create_country = null;
+        $order_create_ip = null;
+
         //if the order is cod 
         if($order->payment->method == 'codpayment'){
             $this->info('Order is COD');
             
-            // check the order status
-
-            // check the order amount
-
-            // check the order create ip, country
-
-            // check the order shipping address
-
+            // check the order create country
+            if(config("GooglePlaces.enable")) {
+                $order_code = \NexaMerchant\CheckoutCod\Models\OrderCodsProxy::where('order_id', $order->id)->first();
+                $order_create_country = $order_code->country;
+                $order_create_ip = $order_code->ip;
+            }
         }
 
-        //var_dump($order->shipping_address->toArray());
+        $this->info('Order Create Country: ' . $order_create_country);
+        $this->info('Order Create IP: ' . $order_create_ip);
 
 
         $client = new Client([
