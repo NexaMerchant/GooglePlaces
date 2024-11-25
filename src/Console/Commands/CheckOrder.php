@@ -161,48 +161,36 @@ class CheckOrder extends Command
             return;
         }
 
-
-        $client = new Client([
-            'base_uri' => 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json',
-            'debug' => false,
-        ]);
-
-        $response = $client->request('GET', '', [
-            'query' => [
-               // 'input' => '1600 Amphitheatre Parkway, Mountain View, CA',
-                'input' => $address,
-                'inputtype' => 'textquery',
-                'fields' => 'formatted_address,name,geometry,plus_code,place_id,icon',
-                'key' => config('GooglePlaces.google_place_api_key'),
-                'region' => $order->shipping_address->country
-            ],
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                // add your headers here
-                'Brand' => 'NexaMerchant',
-            ]
-        ]);
-
-        $resp = $response->getBody()->getContents();
-
-        $resp = json_decode($resp, true);
+        $resp = $this->searchGoogleMap($address);
 
         // when it is not OK
         if($resp['status']!='OK'){
             $this->error('Error: ' . $resp['status']);
 
             // send the error to feishu
+            // search city and code
 
-            if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
+            $address = $order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
-                $text = "URL: ".config("app.url")."\n Order ID:  ".$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+            $resp = $this->searchGoogleMap($address);
 
-                $this->send($text);
+            // when it is not OK
+            if($resp['status']!='OK'){
                 
+                if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
+
+                    $text = "URL: ".config("app.url")."\n Order ID:  ".$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+    
+                    $this->send($text);
+                    
+                }
+    
+                return;
+
+
             }
 
-            return;
+
         }
 
 
@@ -231,5 +219,35 @@ class CheckOrder extends Command
                 'Brand' => 'NexaMerchant',
             ]
         ]);
+    }
+
+    // 
+    private function searchGoogleMap($address) {
+        $client = new Client([
+            'base_uri' => 'https://maps.googleapis.com/maps/api/place/findplacefromtext/json',
+            'debug' => false,
+        ]);
+
+        $response = $client->request('GET', '', [
+            'query' => [
+               // 'input' => '1600 Amphitheatre Parkway, Mountain View, CA',
+                'input' => $address,
+                'inputtype' => 'textquery',
+                'fields' => 'formatted_address,name,geometry,plus_code,place_id,icon',
+                'key' => config('GooglePlaces.google_place_api_key'),
+                'region' => $order->shipping_address->country
+            ],
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                // add your headers here
+                'Brand' => 'NexaMerchant',
+            ]
+        ]);
+
+        $resp = $response->getBody()->getContents();
+
+        $resp = json_decode($resp, true);
+        return $resp;
     }
 }
