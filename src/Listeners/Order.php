@@ -16,7 +16,10 @@ class Order extends Base
      */
     public function afterCreated($order)
     {
-        //Artisan::queue("GooglePlaces:check-order", ['--order_id'=> $order->id])->onQueue('check-order');
+        if(!config('GooglePlaces.enable')) {
+            return;
+        }
+        Artisan::queue("GooglePlaces:check-order", ['--order_id'=> $order->id])->onQueue('check-order');
 
         Log::info('Order created for check place : ' . $order->id);
     }

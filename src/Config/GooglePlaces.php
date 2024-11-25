@@ -39,7 +39,7 @@ return [
      * 
      * The description of the package
      */
-    'description' => '',
+    'description' => 'Check order place by google place api',
 
     /**
      * 
