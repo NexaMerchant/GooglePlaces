@@ -16,13 +16,7 @@ class Order extends Base
      */
     public function afterCreated($order)
     {
-        //Artisan::queue((new Post())->getName(), ['--order_id'=> $order->id])->onConnection('redis')->onQueue('commands');
-        // use default queue
-        //Artisan::queue((new Post())->getName(), ['--order_id'=> $order->id]);
-
-        //Artisan::call('GooglePlaces:check-order', ['--order_id'=> $order->id]);
-
-        Artisan::queue("GooglePlaces:check-order", ['--order_id'=> $order->id])->onQueue('check-order');
+        //Artisan::queue("GooglePlaces:check-order", ['--order_id'=> $order->id])->onQueue('check-order');
 
         Log::info('Order created for check place : ' . $order->id);
     }
