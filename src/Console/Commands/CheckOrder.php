@@ -108,7 +108,6 @@ class CheckOrder extends Command
 
                         $ip_details = $resp;
                         Redis::set('GooglePlaces:ip:'.$order_create_ip, json_encode($resp));
-
                         // check the ip countryCode
                         if($ip_details){
                             
@@ -119,9 +118,7 @@ class CheckOrder extends Command
                             if($ip_details['countryCode'] != $order->shipping_address->country){
 
                                 $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n IP Country Code: " . $ip_details['countryCode'] . ' is not the same as the order create country code: ' . $order->shipping_address->country;
-                                
                                 $this->send($text);
-
                                 return;
                             }
 
@@ -135,7 +132,8 @@ class CheckOrder extends Command
 
         $this->info('Order Create Country: ' . $order_create_country);
         $this->info('Order Create IP: ' . $order_create_ip);
-        //var_dump($ip_details);
+        
+        var_dump($ip_details);
 
         //if the order in redis and return redis data
         $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
@@ -153,12 +151,8 @@ class CheckOrder extends Command
                     $this->send($text);
                     
                 }
-
-
             }
-            
-
-            return;
+            // return; // for testing
         }
 
         $resp = $this->searchGoogleMap($address, $order);
@@ -170,7 +164,7 @@ class CheckOrder extends Command
             // send the error to feishu
             // search city and code
 
-            $address = $order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
+            $address = $order->shipping_address->city.', '.$order->shipping_address->postcode;
 
             $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
 
@@ -188,8 +182,6 @@ class CheckOrder extends Command
                 }
     
                 return;
-
-
             }
 
 
