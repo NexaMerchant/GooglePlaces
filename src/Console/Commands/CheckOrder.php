@@ -89,7 +89,7 @@ class CheckOrder extends Command
                     $ip_details = json_decode($ip_details, true);
                 }else{
                     $client = new Client([
-                        'base_uri' => 'http://ip-api.com/php/',
+                        'base_uri' => 'http://ip-api.com/json/',
                         'debug' => false,
                     ]);
 
@@ -104,11 +104,13 @@ class CheckOrder extends Command
 
                     //var_dump($resp);
 
-                    $resp = unserialize($resp);
-
-                    $ip_details = $resp;
-
-                    Redis::set('GooglePlaces:ip:'.$order_create_ip, json_encode($resp));
+                    $resp = json_decode($resp, true);
+                    if($resp['status']=='success'){
+                        
+                        $ip_details = $resp;
+                        Redis::set('GooglePlaces:ip:'.$order_create_ip, json_encode($resp));
+                    }
+                    
                 }
             }
         }
