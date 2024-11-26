@@ -58,6 +58,29 @@ class CheckOrder extends Command
             return;
         }
 
+        // valid the order email
+        if(!filter_var($order->customer_email, FILTER_VALIDATE_EMAIL)){
+            $this->error('Invalid Email: ' . $order->customer_email);
+
+            $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Invalid Email: " . $order->customer_email;
+
+            $this->send($text);
+
+            return;
+        }
+
+        // valid the order phone, and the phone maybe phone number or mobile number
+        if(!preg_match('/^\+?\d+$/', $order->shipping_address->phone)){
+            $this->error('Invalid Phone: ' . $order->shipping_address->phone);
+
+            $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Invalid Phone: " . $order->shipping_address->phone;
+
+            $this->send($text);
+
+            return;
+        }
+        // check the postcode with state
+
         $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
         //var_dump($address);exit;
@@ -133,7 +156,7 @@ class CheckOrder extends Command
         $this->info('Order Create Country: ' . $order_create_country);
         $this->info('Order Create IP: ' . $order_create_ip);
         
-        var_dump($ip_details);
+        //var_dump($ip_details);
 
         //if the order in redis and return redis data
         $redis_data = Redis::get('GooglePlaces:order:'.$order_id);
@@ -155,42 +178,11 @@ class CheckOrder extends Command
             // return; // for testing
         }
 
-        $resp = $this->searchGoogleMap($address, $order);
-
-        // when it is not OK
-        if($resp['status']!='OK'){
-            $this->error('Error: ' . $resp['status']);
-
-            // send the error to feishu
-            // search city and code
-
-            $address = $order->shipping_address->city.', '.$order->shipping_address->postcode;
-
-            $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
-
-            $resp = $this->searchGoogleMap($address, $order);
-
-            // when it is not OK
-            if($resp['status']!='OK'){
-                
-                if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
-
-                    $text = "URL: ".config("app.url")."\n Order ID:  ".$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
-    
-                    $this->send($text);
-                    
-                }
-    
-                return;
-            }
-
-
-        }
+        $resp = $this->checkAddress($address, $order);
 
 
         Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
 
-        var_dump($resp);
     }
 
     private function send($text) {
@@ -213,6 +205,44 @@ class CheckOrder extends Command
                 'Brand' => 'NexaMerchant',
             ]
         ]);
+    }
+
+    /**
+     * 
+     * @param string $address
+     * @param object $order
+     * 
+     * @return array
+     * 
+     */
+    private function checkAddress($address, $order) {
+        
+        $resp = $this->searchGoogleMap($address, $order);
+        if($resp['status']!='OK'){
+            
+            $address = $order->shipping_address->address1.', '.$order->shipping_address->city;
+
+            $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
+
+            $resp = $this->searchGoogleMap($address, $order);
+
+            // when it is not OK
+            if($resp['status']!='OK'){
+                
+                if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
+
+                    $text = "URL: ".config("app.url")."\n Order ID:  ".$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+    
+                    $this->send($text);
+                    
+                }
+    
+                return;
+
+            }
+
+        }
+
     }
 
     // 
@@ -242,38 +272,6 @@ class CheckOrder extends Command
         $resp = $response->getBody()->getContents();
 
         $resp = json_decode($resp, true);
-
-        if($resp['status']=='OK'){
-
-            $this->info('Search Zip CODE ID: ' . $resp['candidates'][0]['geometry']['location']['lat'].','.$resp['candidates'][0]['geometry']['location']['lng']);
-
-            $client = new Client([
-                'base_uri' => 'https://maps.googleapis.com/maps/api/geocode/json',
-                'debug' => false,
-            ]);
-
-            $response = $client->request('GET', '', [
-                'query' => [
-                    //'place_id' => $resp['candidates'][0]['place_id'],
-                    //'latlng' => $resp['candidates'][0]['geometry']['location']['lat'].','.$resp['candidates'][0]['geometry']['location']['lng'],
-                    'address' => $address,
-                    'key' => config('GooglePlaces.google_place_api_key'),
-                    'fields' => 'address_component,formatted_address,geometry,plus_code',
-                ],
-                'headers' => [
-                    'Content-Type' => 'application/json',
-                    'Accept' => 'application/json',
-                    // add your headers here
-                    'Brand' => 'NexaMerchant',
-                ]
-            ]);
-
-            $rp = $response->getBody()->getContents();
-
-            $rp = json_decode($rp, true);
-
-            var_dump($rp);
-        }
 
         return $resp;
     }
