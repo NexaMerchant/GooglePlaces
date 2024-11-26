@@ -220,7 +220,7 @@ class CheckOrder extends Command
         $resp = $this->searchGoogleMap($address, $order);
         if($resp['status']!='OK'){
             
-            $address = $order->shipping_address->address1.', '.$order->shipping_address->city;
+            $address = $order->shipping_address->address1.' '.$order->shipping_address->postcode;
 
             $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
 
