@@ -115,6 +115,41 @@ class CheckOrder extends Command
             }
         }
 
+        // check the repeat order by ip
+        if($order_create_ip){
+            
+            $total = \NexaMerchant\CheckoutCod\Models\OrderCods::where('ip_address', $order_create_ip)->count();
+
+            if($total>2){
+                $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n IP Address: " . $order_create_ip . ' has ' . $total . ' orders';
+                $this->send($text);
+            }
+
+        }
+
+        // check the repeat order by email
+        $total = $this->orderRepository->findWhere(['customer_email' => $order->customer_email, 'status' => 'processing'])->count();
+
+        if($total>2){
+            $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Email: " . $order->customer_email . ' has ' . $total . ' orders';
+            $this->send($text);
+        }
+
+        // check the repeat order by phone
+        $total = $this->orderRepository->findWhere(['shipping_address.phone' => $order->shipping_address->phone, 'status' => 'processing'])->count();
+
+        if($total>2){
+            $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Phone: " . $order->shipping_address->phone . ' has ' . $total . ' orders';
+            $this->send($text);
+        }
+        // check the repeat order by address
+        $total = $this->orderRepository->findWhere(['shipping_address.address1' => $order->shipping_address->address1, 'status' => 'processing'])->count();
+
+        if($total>2){
+            $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address: " . $order->shipping_address->address1 . ' has ' . $total . ' orders';
+            $this->send($text);
+        }
+
 
         $this->info('Order Create Country: ' . $order_create_country);
         $this->info('Order Create IP: ' . $order_create_ip);
@@ -149,7 +184,7 @@ class CheckOrder extends Command
         Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
 
 
-
+        
     }
 
     private function send($text) {
