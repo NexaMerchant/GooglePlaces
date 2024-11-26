@@ -108,7 +108,7 @@ class CheckOrder extends Command
                 // use the ip look up from redis
                 if($order_create_country != $order->shipping_address->country){
 
-                    $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n IP Country Code: " . $ip_details['countryCode'] . ' is not the same as the order create country code: ' . $order->shipping_address->country;
+                    $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n IP Country Code: " . $order_create_country . ' is not the same as the order create country code: ' . $order->shipping_address->country;
                     $this->send($text);
                     return;
                 }
@@ -148,7 +148,7 @@ class CheckOrder extends Command
 
         Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
 
-        
+
 
     }
 
