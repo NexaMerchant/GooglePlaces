@@ -106,49 +106,11 @@ class CheckOrder extends Command
             // use the ip look up to get the more detail of the ip
             if($order_create_ip){
                 // use the ip look up from redis
-                $ip_details = Redis::get('GooglePlaces:ip:'.$order_create_ip);
-                if($ip_details){
-                    $ip_details = json_decode($ip_details, true);
-                }else{
-                    $client = new Client([
-                        'base_uri' => 'http://ip-api.com/json/',
-                        'debug' => true,
-                        'timeout' => 2.0,
-                    ]);
+                if($order_create_country != $order->shipping_address->country){
 
-                    $response = $client->request('GET', $order_create_ip, [
-                        'headers' => [
-                            // add your headers here
-                            'Brand' => 'NexaMerchant',
-                        ]
-                    ]);
-
-                    $resp = $response->getBody()->getContents();
-
-                    //var_dump($resp);
-
-                    $resp = json_decode($resp, true);
-                    if($resp['status']=='success'){
-
-                        $ip_details = $resp;
-                        Redis::set('GooglePlaces:ip:'.$order_create_ip, json_encode($resp));
-                        // check the ip countryCode
-                        if($ip_details){
-                            
-                            $this->info('IP Details: ' . json_encode($ip_details));
-                            $this->info('IP Country Code: ' . $ip_details['countryCode']);
-
-                            // if the ip country code is not the same as the order create country code
-                            if($ip_details['countryCode'] != $order->shipping_address->country){
-
-                                $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n IP Country Code: " . $ip_details['countryCode'] . ' is not the same as the order create country code: ' . $order->shipping_address->country;
-                                $this->send($text);
-                                return;
-                            }
-
-                        }
-                    }
-                    
+                    $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address ".$address." \n IP Country Code: " . $ip_details['countryCode'] . ' is not the same as the order create country code: ' . $order->shipping_address->country;
+                    $this->send($text);
+                    return;
                 }
             }
         }
