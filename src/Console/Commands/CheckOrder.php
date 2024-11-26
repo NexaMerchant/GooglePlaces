@@ -183,12 +183,10 @@ class CheckOrder extends Command
     private function checkAddress($address, $order) {
         
         $resp = $this->searchGoogleMap($address, $order);
+        var_dump($resp);
         if($resp['status']!='OK'){
-            
             $address = $order->shipping_address->address1.' '.$order->shipping_address->postcode;
-
             $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
-
             $resp = $this->searchGoogleMap($address, $order);
 
             $order_id = $order->id;
@@ -207,7 +205,6 @@ class CheckOrder extends Command
                 return;
 
             }
-
         }
 
     }
