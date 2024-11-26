@@ -164,18 +164,20 @@ class CheckOrder extends Command
             var_dump(json_decode($redis_data, true));
 
             $redis_data = json_decode($redis_data, true);
-
-            if($redis_data['status']!='OK'){
+            if(isset($redis_data['status'])) {
+                if($redis_data['status']!='OK'){
                 
-                if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
-
-                    $text = "URL: ".config("app.url")."\n Order ID:  ".$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+                    if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
     
-                    $this->send($text);
-                    
+                        $text = "URL: ".config("app.url")."\n Order ID:  ".$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+        
+                        $this->send($text);
+                        
+                    }
                 }
+
+                // return; // for testing
             }
-            // return; // for testing
         }
 
         $resp = $this->checkAddress($address, $order);
