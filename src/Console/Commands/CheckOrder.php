@@ -179,7 +179,7 @@ class CheckOrder extends Command
                 
                     if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
     
-                        $text = "URL: ".config("app.url")."\n Order ID:  ".config('shopify.order_pre').'#'.$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+                        $text = "URL: ".config("app.url")."\n Order ID:  ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
         
                         $this->send($text);
                         
