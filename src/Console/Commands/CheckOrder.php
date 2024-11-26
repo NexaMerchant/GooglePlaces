@@ -148,6 +148,8 @@ class CheckOrder extends Command
 
         Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
 
+        
+
     }
 
     private function send($text) {
