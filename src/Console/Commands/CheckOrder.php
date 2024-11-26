@@ -135,20 +135,20 @@ class CheckOrder extends Command
             $this->send($text);
         }
 
-        // check the repeat order by phone
-        $total = $this->orderRepository->findWhere(['shipping_address.phone' => $order->shipping_address->phone, 'status' => 'processing'])->count();
+        // // check the repeat order by phone
+        // $total = $this->orderRepository->findWhere(['shipping_address.phone' => $order->shipping_address->phone, 'status' => 'processing'])->count();
 
-        if($total>2){
-            $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Phone: " . $order->shipping_address->phone . ' has ' . $total . ' orders';
-            $this->send($text);
-        }
-        // check the repeat order by address
-        $total = $this->orderRepository->findWhere(['shipping_address.address1' => $order->shipping_address->address1, 'status' => 'processing'])->count();
+        // if($total>2){
+        //     $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Phone: " . $order->shipping_address->phone . ' has ' . $total . ' orders';
+        //     $this->send($text);
+        // }
+        // // check the repeat order by address
+        // $total = $this->orderRepository->findWhere(['shipping_address.address1' => $order->shipping_address->address1, 'status' => 'processing'])->count();
 
-        if($total>2){
-            $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address: " . $order->shipping_address->address1 . ' has ' . $total . ' orders';
-            $this->send($text);
-        }
+        // if($total>2){
+        //     $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Address: " . $order->shipping_address->address1 . ' has ' . $total . ' orders';
+        //     $this->send($text);
+        // }
 
 
         $this->info('Order Create Country: ' . $order_create_country);
