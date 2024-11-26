@@ -112,7 +112,8 @@ class CheckOrder extends Command
                 }else{
                     $client = new Client([
                         'base_uri' => 'http://ip-api.com/json/',
-                        'debug' => false,
+                        'debug' => true,
+                        'timeout' => 2.0,
                     ]);
 
                     $response = $client->request('GET', $order_create_ip, [
