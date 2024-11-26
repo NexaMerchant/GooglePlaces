@@ -136,7 +136,7 @@ class CheckOrder extends Command
         }
 
         // // check the repeat order by phone
-         $total = $this->orderRepository->findWhere(['shipping_address.phone' => $order->shipping_address->phone])->count();
+         $total = $this->orderRepository->findWhere(['shipping_address->phone' => $order->shipping_address->phone])->count();
 
         if($total>2){
             $text = "URL: ".config("app.url")."\n Order ID ".$order_id." \n Phone: " . $order->shipping_address->phone . ' has ' . $total . ' orders';
