@@ -52,6 +52,8 @@ class CheckOrder extends Command
         $order_id = $this->option('order_id');
         $this->info('Order ID: ' . $order_id);
 
+        var_dump($order_id);
+
         $order = $this->orderRepository->find($order_id);
         if(!$order){
             $this->error('Order not found');
@@ -89,6 +91,7 @@ class CheckOrder extends Command
         $order_create_country = null;
         $order_create_ip = null;
         $ip_details = null;
+        $order_shopify_id = null;
 
         //if the order is cod 
         if($order->payment->method == 'codpayment'){
@@ -103,25 +106,34 @@ class CheckOrder extends Command
                 }
             }
 
+            if(config("Shopify.enable")=="true") {
+                $order_shopify = \NexaMerchant\Shopify\Models\OrderShopify::where('order_id', $order->id)->first();
+                if($order_shopify) {
+                    $order_shopify_id = $order_shopify->shopify_order_id;
+                }
+            }
+
             // use the ip look up to get the more detail of the ip
             if($order_create_ip){
                 // use the ip look up from redis
                 if($order_create_country != $order->shipping_address->country){
 
-                    $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Address ".$address." \n IP Country Code: " . $order_create_country . ' is not the same as the order create country code: ' . $order->shipping_address->country;
+                    $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n Address ".$address." \n IP Country Code: " . $order_create_country . ' is not the same as the order create country code: ' . $order->shipping_address->country;
                     $this->send($text);
                     return;
                 }
             }
+
+           
+
         }
 
         // check the repeat order by ip
         if($order_create_ip){
-            
             $total = \NexaMerchant\CheckoutCod\Models\OrderCods::where('ip_address', $order_create_ip)->count();
 
             if($total>2){
-                $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n IP Address: " . $order_create_ip . ' has ' . $total . ' orders';
+                $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n IP Address: " . $order_create_ip . ' has ' . $total . ' orders';
                 $this->send($text);
             }
 
@@ -131,7 +143,7 @@ class CheckOrder extends Command
         $total = $this->orderRepository->findWhere(['customer_email' => $order->customer_email, 'status' => 'processing'])->count();
 
         if($total>2){
-            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Email: " . $order->customer_email . ' has ' . $total . ' orders';
+            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id."\n Email: " . $order->customer_email . ' has ' . $total . ' orders';
             $this->send($text);
         }
 
@@ -231,7 +243,7 @@ class CheckOrder extends Command
             // when it is not OK
             if($resp['status']!='OK'){
                 if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
-                    $text = "URL: ".config("app.url")."\n Order ID:  ".$order_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+                    $text = "URL: ".config("app.url")."\n Order ID:  ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
                     $this->send($text);
                 }
                 return;
