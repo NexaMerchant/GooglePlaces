@@ -226,6 +226,8 @@ class CheckOrder extends Command
 
             $resp = $this->searchGoogleMap($address, $order);
 
+            $order_id = $order->id;
+
             // when it is not OK
             if($resp['status']!='OK'){
                 
