@@ -107,7 +107,7 @@ class CheckOrder extends Command
             }
 
             if(config("shopify.enable")=="true") {
-                $order_shopify = \NexaMerchant\Shopify\Models\OrderShopify::where('order_id', $order->id)->first();
+                $order_shopify = \Nicelizhi\Shopify\Models\ShopifyOrder::where('order_id', $order->id)->first();
                 if($order_shopify) {
                     $order_shopify_id = $order_shopify->shopify_order_id;
                 }
