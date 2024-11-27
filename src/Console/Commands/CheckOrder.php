@@ -190,7 +190,7 @@ class CheckOrder extends Command
             }
         }
 
-        $resp = $this->checkAddress($address, $order);
+        $resp = $this->checkAddress($address, $order, $order_shopify_id);
 
 
         Redis::set('GooglePlaces:order:'.$order->id, json_encode($resp));
@@ -229,7 +229,7 @@ class CheckOrder extends Command
      * @return array
      * 
      */
-    private function checkAddress($address, $order) {
+    private function checkAddress($address, $order, $order_shopify_id = null) {
         
         $resp = $this->searchGoogleMap($address, $order);
         var_dump($resp);
