@@ -64,7 +64,7 @@ class CheckOrder extends Command
         if(!filter_var($order->customer_email, FILTER_VALIDATE_EMAIL)){
             $this->error('Invalid Email: ' . $order->customer_email);
 
-            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Invalid Email: " . $order->customer_email;
+            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').$order_id." \n Invalid Email: " . $order->customer_email;
 
             $this->send($text);
 
@@ -75,7 +75,7 @@ class CheckOrder extends Command
         if(!preg_match('/^\+?\d+$/', $order->shipping_address->phone)){
             $this->error('Invalid Phone: ' . $order->shipping_address->phone);
 
-            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Invalid Phone: " . $order->shipping_address->phone;
+            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').$order_id." \n Invalid Phone: " . $order->shipping_address->phone;
 
             $this->send($text);
 
@@ -118,7 +118,7 @@ class CheckOrder extends Command
                 // use the ip look up from redis
                 if($order_create_country != $order->shipping_address->country){
 
-                    $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n Address ".$address." \n IP Country Code: " . $order_create_country . ' is not the same as the order create country code: ' . $order->shipping_address->country;
+                    $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').$order_id." \n Shopify ID：".$order_shopify_id." \n Address ".$address." \n IP Country Code: " . $order_create_country . ' is not the same as the order create country code: ' . $order->shipping_address->country;
                     $this->send($text);
                     return;
                 }
@@ -133,7 +133,7 @@ class CheckOrder extends Command
             $total = \NexaMerchant\CheckoutCod\Models\OrderCods::where('ip_address', $order_create_ip)->count();
 
             if($total>2){
-                $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n IP Address: " . $order_create_ip . ' has ' . $total . ' orders';
+                $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').$order_id." \n Shopify ID：".$order_shopify_id." \n IP Address: " . $order_create_ip . ' has ' . $total . ' orders';
                 $this->send($text);
             }
 
@@ -143,7 +143,7 @@ class CheckOrder extends Command
         $total = $this->orderRepository->findWhere(['customer_email' => $order->customer_email, 'status' => 'processing'])->count();
 
         if($total>2){
-            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id."\n Email: " . $order->customer_email . ' has ' . $total . ' orders';
+            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').$order_id." \n Shopify ID：".$order_shopify_id."\n Email: " . $order->customer_email . ' has ' . $total . ' orders';
             $this->send($text);
         }
 
@@ -179,7 +179,7 @@ class CheckOrder extends Command
                 
                     if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
     
-                        $text = "URL: ".config("app.url")."\n Order ID:  ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+                        $text = "URL: ".config("app.url")."\n Order ID:  ".config('shopify.order_pre').$order_id." \n Shopify ID：".$order_shopify_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
         
                         $this->send($text);
                         
@@ -243,7 +243,7 @@ class CheckOrder extends Command
             // when it is not OK
             if($resp['status']!='OK'){
                 if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
-                    $text = "URL: ".config("app.url")."\n Order ID:  ".config('shopify.order_pre').'#'.$order_id." \n Shopify ID：".$order_shopify_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
+                    $text = "URL: ".config("app.url")."\n Order ID:  ".config('shopify.order_pre').$order_id." \n Shopify ID：".$order_shopify_id." \n Address:  ".$address. " \n Country: " .$order->shipping_address->country." \n Google Place Api Error: " . json_encode($resp);
                     $this->send($text);
                 }
                 return;
