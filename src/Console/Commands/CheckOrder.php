@@ -113,7 +113,9 @@ class CheckOrder extends Command
 
         $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
-        $this->validateAddress($order);
+        $validateAddress = $this->validateAddress($order);
+
+        var_dump($validateAddress);
 
         //var_dump($address);exit;
         $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
