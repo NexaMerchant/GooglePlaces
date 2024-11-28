@@ -103,6 +103,7 @@ class GooglePlacesServiceProvider extends ServiceProvider
                 \NexaMerchant\GooglePlaces\Console\Commands\Install::class,
                 \NexaMerchant\GooglePlaces\Console\Commands\UnInstall::class,
                 \NexaMerchant\GooglePlaces\Console\Commands\CheckOrder::class,
+                \NexaMerchant\GooglePlaces\Console\Commands\DownLocales::class,
             ]);
         }
     }
