@@ -83,6 +83,9 @@ class CheckOrder extends Command
         }
         // check the postcode with state
 
+        // remove the address1 have číslo domu
+        $order->shipping_address->address1 = str_replace(['číslo domu：','házszám：','numer domu：','numărul casei：'], ' ', $order->shipping_address->address1);
+
         $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
         //var_dump($address);exit;
