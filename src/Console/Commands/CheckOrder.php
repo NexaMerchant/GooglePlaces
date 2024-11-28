@@ -244,7 +244,7 @@ class CheckOrder extends Command
             return;
         }
 
-        $address_formatter = new Adamlc\AddressFormat\Format();
+        $address_formatter = new \Adamlc\AddressFormat\Format();
         $address_formatter->setAttribute('ADMIN_AREA', $order->shipping_address->state);
         $address_formatter->setAttribute('LOCALITY', $order->shipping_address->city);
         $address_formatter->setAttribute('POSTAL_CODE', $order->shipping_address->postcode);
