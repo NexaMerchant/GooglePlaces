@@ -251,7 +251,7 @@ class CheckOrder extends Command
             $address_format = array_filter($address_format);
             $address_format = array_values($address_format);
             $address_format = array_map('trim', $address_format);
-            $address_format = array_map('strtolower', $address_format);
+            //$address_format = array_map('strtolower', $address_format);
 
             $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
 
@@ -259,7 +259,7 @@ class CheckOrder extends Command
             $address = array_filter($address);
             $address = array_values($address);
             $address = array_map('trim', $address);
-            $address = array_map('strtolower', $address);
+            //$address = array_map('strtolower', $address);
 
             var_dump($address_format);
             var_dump($address);
