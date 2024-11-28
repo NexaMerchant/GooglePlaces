@@ -244,38 +244,17 @@ class CheckOrder extends Command
             return;
         }
 
-        // check the address state
-        if(isset($local['fmt'])) {
-            $address_format = $local['fmt'];
-            $address_format = explode('%', $address_format);
-            $address_format = array_filter($address_format);
-            $address_format = array_values($address_format);
-            $address_format = array_map('trim', $address_format);
-            //$address_format = array_map('strtolower', $address_format);
+        $address_formatter = new Adamlc\AddressFormat\Format();
+        $address_formatter->setAttribute('ADMIN_AREA', $order->shipping_address->state);
+        $address_formatter->setAttribute('LOCALITY', $order->shipping_address->city);
+        $address_formatter->setAttribute('POSTAL_CODE', $order->shipping_address->postcode);
+        $address_formatter->setAttribute('COUNTRY', $order->shipping_address->country);
+        $address_formatter->setAttribute('ADDRESS_LINE_1', $order->shipping_address->address1);
+        $address_formatter->setAttribute('ADDRESS_LINE_2', $order->shipping_address->address2);
 
-            $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
+        $address = $address_formatter->formatAddress();
 
-            $address = explode(' ', $address);
-            $address = array_filter($address);
-            $address = array_values($address);
-            $address = array_map('trim', $address);
-            //$address = array_map('strtolower', $address);
-
-            var_dump($address_format);
-            var_dump($address);
-            var_dump($this->address_map);
-            var_dump($local);
-
-            $address_format = array_map(function($item){
-                return $this->address_map[$item];
-            }, $address_format);
-
-            $address = array_combine($address_format, $address);
-
-            $address['posturl'] = $local['posturl'];
-            $address['local'] = $local;
-            $this->info('Address: ' . json_encode($address));
-        }
+        var_dump($address);
     }
 
     private function send($text) {
