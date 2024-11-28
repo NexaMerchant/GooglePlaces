@@ -24,6 +24,28 @@ class CheckOrder extends Command
     protected $description = 'Check order address use Google Place Api GooglePlaces:check-order {--order_id=}';
 
     /**
+     * This map specifies the content on how to format the address
+     * See this URL for origin reference
+     *
+     * https://code.google.com/p/libaddressinput/source/browse/trunk
+     * /src/com/android/i18n/addressinput/AddressField.java?r=111
+     *
+     * @var mixed
+     * @access private
+     */
+    private $address_map = array(
+        'S' => 'ADMIN_AREA', //state
+        'C' => 'LOCALITY', //city
+        'N' => 'RECIPIENT', //name
+        'O' => 'ORGANIZATION', //organization
+        'D' => 'DEPENDENT_LOCALITY',
+        'Z' => 'POSTAL_CODE',
+        'X' => 'SORTING_CODE',
+        'A' => 'STREET_ADDRESS',
+        'R' => 'COUNTRY'
+    );
+
+    /**
      * Create a new command instance.
      *
      * @return void
@@ -90,6 +112,8 @@ class CheckOrder extends Command
 
 
         $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
+
+        $this->validateAddress($order);
 
         //var_dump($address);exit;
         $this->info('Address: ' . $address. ' Country: ' . $order->shipping_address->country);
@@ -203,6 +227,50 @@ class CheckOrder extends Command
 
 
         
+    }
+
+
+    private function validateAddress($order) {
+        // check the address country file exists
+        $order->shipping_address->country = strtolower($order->shipping_address->country); // convert to lower case
+        if(!file_exists(storage_path('app/locales/i18n/'.$order->shipping_address->country.'.json'))){
+            $this->error('Country file not exists: ' . $order->shipping_address->country);
+            return;
+        }
+        $local = file_get_contents(storage_path('app/locales/i18n/'.$order->shipping_address->country.'.json'));
+        $local = json_decode($local, true);
+        if(!$local){
+            $this->error('Country file not valid: ' . $order->shipping_address->country);
+            return;
+        }
+
+        // check the address state
+        if(isset($local['fmt'])) {
+            $address_format = $local['fmt'];
+            $address_format = explode('%', $address_format);
+            $address_format = array_filter($address_format);
+            $address_format = array_values($address_format);
+            $address_format = array_map('trim', $address_format);
+            $address_format = array_map('strtolower', $address_format);
+
+            $address = $order->shipping_address->address1.', '.$order->shipping_address->city.', '.$order->shipping_address->state.' '.$order->shipping_address->postcode;
+
+            $address = explode(' ', $address);
+            $address = array_filter($address);
+            $address = array_values($address);
+            $address = array_map('trim', $address);
+            $address = array_map('strtolower', $address);
+
+            $address_format = array_map(function($item){
+                return $this->address_map[$item];
+            }, $address_format);
+
+            $address = array_combine($address_format, $address);
+
+            $address['posturl'] = $local['posturl'];
+            $address['local'] = $local;
+            $this->info('Address: ' . json_encode($address));
+        }
     }
 
     private function send($text) {
