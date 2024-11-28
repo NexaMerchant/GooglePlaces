@@ -45,6 +45,8 @@ class CheckOrder extends Command
         'R' => 'COUNTRY'
     );
 
+    private $posturl = null;
+
     /**
      * Create a new command instance.
      *
@@ -246,6 +248,8 @@ class CheckOrder extends Command
             $this->error('Country file not valid: ' . $order->shipping_address->country);
             return;
         }
+
+        $this->posturl = $local['posturl'];
 
         $address_formatter = new \Adamlc\AddressFormat\Format();
         $address_formatter->setLocale($order->shipping_address->country);
