@@ -19,6 +19,13 @@ class DownLocales extends Command
     {
         $this->info('Downloading locales from Google Places API');
 
+        /***
+         * 
+         * @link https://chromium-i18n.appspot.com/ssl-address
+         * 
+         * 
+         */
+
         $locales = json_decode(file_get_contents($this->locale_data_url));
 
         if (isset($locales->countries)) {
