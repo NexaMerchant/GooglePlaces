@@ -232,7 +232,7 @@ class CheckOrder extends Command
 
     private function validateAddress($order) {
         // check the address country file exists
-        $order->shipping_address->country = strtolower($order->shipping_address->country); // convert to lower case
+        $order->shipping_address->country = strtoupper($order->shipping_address->country); // convert to lower case
         if(!file_exists(storage_path('app/locales/i18n/'.$order->shipping_address->country.'.json'))){
             $this->error('Country file not exists: ' . $order->shipping_address->country);
             return;
