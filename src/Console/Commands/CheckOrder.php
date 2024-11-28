@@ -261,9 +261,9 @@ class CheckOrder extends Command
             $address = array_map('trim', $address);
             $address = array_map('strtolower', $address);
 
-            $address_format = array_map(function($item){
-                return $this->address_map[$item];
-            }, $address_format);
+            // $address_format = array_map(function($item){
+            //     return $this->address_map[$item];
+            // }, $address_format);
 
             $address = array_combine($address_format, $address);
 
