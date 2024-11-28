@@ -254,6 +254,7 @@ class CheckOrder extends Command
         $address_formatter->setAttribute('COUNTRY', $order->shipping_address->country);
         $address_formatter->setAttribute('ADDRESS_LINE_1', $order->shipping_address->address1);
         $address_formatter->setAttribute('ADDRESS_LINE_2', $order->shipping_address->address2);
+        $address_formatter->setAttribute('STREET_ADDRESS', $order->shipping_address->address1);
         try {
             $address = $address_formatter->formatAddress();
             var_dump($address);
