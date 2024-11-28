@@ -245,16 +245,21 @@ class CheckOrder extends Command
         }
 
         $address_formatter = new \Adamlc\AddressFormat\Format();
+        $address_formatter->setLocale($order->shipping_address->country);
         $address_formatter->setAttribute('ADMIN_AREA', $order->shipping_address->state);
         $address_formatter->setAttribute('LOCALITY', $order->shipping_address->city);
         $address_formatter->setAttribute('POSTAL_CODE', $order->shipping_address->postcode);
         $address_formatter->setAttribute('COUNTRY', $order->shipping_address->country);
         $address_formatter->setAttribute('ADDRESS_LINE_1', $order->shipping_address->address1);
         $address_formatter->setAttribute('ADDRESS_LINE_2', $order->shipping_address->address2);
-
-        $address = $address_formatter->formatAddress();
-
-        var_dump($address);
+        try {
+            $address = $address_formatter->formatAddress();
+            var_dump($address);
+            return $address;
+        } catch (\Exception $e) {
+            $this->error('Country file not valid: ' . $order->shipping_address->country);
+            return;
+        }        
     }
 
     private function send($text) {
