@@ -257,6 +257,8 @@ class CheckOrder extends Command
             return false;
         }
 
+        return true;
+
         // Get MX records
         getmxrr($domain, $mxhosts, $mxweight);
         $mxhost = $mxhosts[0];
