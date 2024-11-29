@@ -95,6 +95,19 @@ class CheckOrder extends Command
             return;
         }
 
+        // validate the order email with the domain
+        $validate_email = $this->canReceiveEmail($order->customer_email);
+        if(!$validate_email){
+            $this->error('Invalid Email: ' . $order->customer_email);
+
+            $text = "URL: ".config("app.url")."\n Order ID ".config('shopify.order_pre').$order_id." \n Invalid Email: " . $order->customer_email;
+
+            $this->send($text);
+
+            return;
+        }
+
+
         // valid the order phone, and the phone maybe phone number or mobile number
         if(!preg_match('/^\+?\d+$/', $order->shipping_address->phone)){
             $this->error('Invalid Phone: ' . $order->shipping_address->phone);
@@ -232,6 +245,46 @@ class CheckOrder extends Command
 
 
         
+    }
+
+    private function canReceiveEmail($email)
+    {
+        // Split the email into local and domain parts
+        list($user, $domain) = explode('@', $email);
+
+        // Check if the domain has MX records
+        if (!checkdnsrr($domain, 'MX')) {
+            return false;
+        }
+
+        // Get MX records
+        getmxrr($domain, $mxhosts, $mxweight);
+        $mxhost = $mxhosts[0];
+
+        // Connect to the mail server
+        $connect = @fsockopen($mxhost, 25, $errno, $errstr, 10);
+        if (!$connect) {
+            return false;
+        }
+
+        // Set SMTP conversation
+        $response = fgets($connect);
+        fputs($connect, "HELO example.com\r\n");
+        $response = fgets($connect);
+        fputs($connect, "MAIL FROM: <check@example.com>\r\n");
+        $response = fgets($connect);
+        fputs($connect, "RCPT TO: <$email>\r\n");
+        $response = fgets($connect);
+
+        // Get response code
+        $code = substr($response, 0, 3);
+
+        // Close connection
+        fputs($connect, "QUIT\r\n");
+        fclose($connect);
+
+        // Check if email can receive emails
+        return ($code == '250');
     }
 
 
