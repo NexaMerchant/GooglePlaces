@@ -272,7 +272,7 @@ class CheckOrder extends Command
 
         // Set SMTP conversation
         $response = fgets($connect);
-        fputs($connect, "HELO example.com\r\n");
+        fputs($connect, "HELO google.com\r\n");
         $response = fgets($connect);
 
         // Initiate STARTTLS
@@ -289,9 +289,9 @@ class CheckOrder extends Command
 
         // Set SMTP conversation
         $response = fgets($connect);
-        fputs($connect, "HELO example.com\r\n");
+        fputs($connect, "HELO google.com\r\n");
         $response = fgets($connect);
-        fputs($connect, "MAIL FROM: <customer@example.com>\r\n");
+        fputs($connect, "MAIL FROM: <customer@google.com>\r\n");
         $response = fgets($connect);
         fputs($connect, "RCPT TO: <$email>\r\n");
         $response = fgets($connect);
