@@ -257,13 +257,15 @@ class CheckOrder extends Command
             return false;
         }
 
-        return true;
+        
 
         // Get MX records
         getmxrr($domain, $mxhosts, $mxweight);
         $mxhost = $mxhosts[0];
 
         var_dump($mxhost);
+
+        return true;
 
         // Connect to the mail server
         $connect = @fsockopen($mxhost, 25, $errno, $errstr, 10);
