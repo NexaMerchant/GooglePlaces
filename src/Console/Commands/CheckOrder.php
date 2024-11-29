@@ -261,23 +261,47 @@ class CheckOrder extends Command
         getmxrr($domain, $mxhosts, $mxweight);
         $mxhost = $mxhosts[0];
 
+        var_dump($mxhost);
+
         // Connect to the mail server
         $connect = @fsockopen($mxhost, 25, $errno, $errstr, 10);
+        var_dump($connect);
         if (!$connect) {
             return false;
         }
 
         // Set SMTP conversation
         $response = fgets($connect);
-        fputs($connect, "HELO example.com\r\n");
+        fputs($connect, "HELO hatmeo.com\r\n");
         $response = fgets($connect);
-        fputs($connect, "MAIL FROM: <check@example.com>\r\n");
+
+        // Initiate STARTTLS
+        fputs($connect, "STARTTLS\r\n");
+        $response = fgets($connect);
+
+        if (substr($response, 0, 3) != '220') {
+            fclose($connect);
+            return false;
+        }
+
+        // Enable encryption on the socket
+        stream_socket_enable_crypto($connect, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+
+        // Set SMTP conversation
+        $response = fgets($connect);
+        fputs($connect, "HELO hatmeo.com\r\n");
+        $response = fgets($connect);
+        fputs($connect, "MAIL FROM: <customer@hatmeo.com>\r\n");
         $response = fgets($connect);
         fputs($connect, "RCPT TO: <$email>\r\n");
         $response = fgets($connect);
 
+        var_dump($response);
+
         // Get response code
         $code = substr($response, 0, 3);
+
+        var_dump($code);
 
         // Close connection
         fputs($connect, "QUIT\r\n");
