@@ -1,6 +1,6 @@
 <?php
 
-namespace NexaMerchant\Apps\GooglePlaces\Docs\V1\GooglePlaces\Controllers;
+namespace NexaMerchant\GooglePlaces\Docs\V1\GooglePlaces\Controllers;
 
 /**
  * @OA\Info(
@@ -9,8 +9,7 @@ namespace NexaMerchant\Apps\GooglePlaces\Docs\V1\GooglePlaces\Controllers;
  *      description="NexaMerchant GooglePlaces Rest API Documentation",
  *
  *      @OA\Contact(
- *          email="nice.lizhi@gmail.com",
- *          name="NexaMerchant"
+ *          email="nice.lizhi@gmail.com"
  *     )
  * )
  * @OA\Server(
