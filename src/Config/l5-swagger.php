@@ -43,8 +43,8 @@ return [
             ],
 
         ],
-    ],
-    'constants' => [
-        'APP_URL' => env('APP_URL'),
-    ],
+        'constants' => [
+            'APP_URL' => env('APP_URL'),
+        ],
+    ]
 ];
