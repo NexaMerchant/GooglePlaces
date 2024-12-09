@@ -13,7 +13,7 @@ namespace NexaMerchant\GooglePlaces\Docs\V1\GooglePlaces\Controllers;
  *     )
  * )
  * @OA\Server(
- *     url=APP_URL,
+ *     url="http://localhost:8000/api/v1",
  *    description="NexaMerchant GooglePlaces End Rest API"
  * )
  * @OA\Tag(
