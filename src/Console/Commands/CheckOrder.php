@@ -356,6 +356,13 @@ class CheckOrder extends Command
             'debug' => false,
         ]);
 
+        if(config('GooglePlaces.enable')=="true" && config('GooglePlaces.feishu_webhook')) {
+            $this->info('Send Message: ' . $text);
+        }else{
+            $this->error('Feishu Webhook not configured');
+            return;
+        }
+
         $response = $client->request('POST', config('GooglePlaces.feishu_webhook'), [
             'json' => [
                 'msg_type' => 'text',
